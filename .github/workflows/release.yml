@@ -32,7 +32,7 @@ jobs:
         run: |
           v="${GITHUB_REF_NAME#v}"
           sed -i "s/^var Version = .*/var Version = \"$v\"/" main.go
-          go run github.com/toolingdev/ptz-controller/sdk/addon/cmd/ptz-addon build
+          go run github.com/toolingdev/jadeck/sdk/addon/cmd/ptz-addon build
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}

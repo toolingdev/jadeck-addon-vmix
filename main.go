@@ -1,4 +1,4 @@
-// vMix: a PTZ controller add-on. Cut, fade, preview, tally and live
+// vMix: a jadeck add-on. Cut, fade, preview, tally and live
 // status through vMix's Web Controller API.
 package main
 
@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/toolingdev/ptz-controller/sdk/addon"
+	"github.com/toolingdev/jadeck/sdk/addon"
 )
 
 // Version is set by the release build.
@@ -28,7 +28,7 @@ var widgetSample = map[string]any{"/api/switcher/status": map[string]any{
 func spec() addon.Spec {
 	return addon.Spec{
 		Manifest: addon.Manifest{
-			ID: "vmix", Name: "vMix", Version: Version, Publisher: "PTZ Controller", APIVersion: addon.APIVersion, Repo: "toolingdev/ptz-addon-vmix",
+			ID: "vmix", Name: "vMix", Version: Version, Publisher: "jadeck", APIVersion: addon.APIVersion, Repo: "toolingdev/jadeck-addon-vmix",
 			Description: "Cut, fade, preview, tally and live status from vMix.",
 			Reaches:     "The vMix PCs you add as connections (vMix Web Controller, usually port 8088)",
 			ConnectionTypes: []addon.ConnectionType{{
