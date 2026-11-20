@@ -1,5 +1,9 @@
 # vMix — PTZ controller add-on
 
+Cut, fade, preview, tally and live status from vMix.
+
+Install: it ships with the controller (Settings → Add-ons); newer releases of this repository arrive as updates there.
+
 Build every platform and the `.ptzaddon` package:
 
 ```bash
