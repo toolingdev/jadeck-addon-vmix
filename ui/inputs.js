@@ -31,7 +31,9 @@
     if (!items.length) return K.empty(main, "No inputs. Pick some in this widget's settings.");
     var numbers = K.bool("numbers", true);
     var r = main.getBoundingClientRect(), gap = r.width < 360 ? 6 : 10;
-    var tall = r.height > 180 && document.body.clientHeight > 220;
+    // Decide from the whole frame, not from main: showing the footer shrinks
+    // main, and judging by main made the hint flicker on and off forever.
+    var tall = (window.innerHeight || document.body.clientHeight) > 260;
     if (!foot && tall) { foot = K.el("footer"); document.body.appendChild(foot); }
     if (foot) { foot.hidden = !tall; foot.textContent = (hints[set.tap] || hints.preview) + " · inputs tracked by vMix ID"; r = main.getBoundingClientRect(); }
     var f = fit(items.length, r.width, r.height, gap);
