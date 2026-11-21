@@ -1,0 +1,22 @@
+#grid { position: absolute; inset: 0; display: grid; gap: 10px; align-content: center; justify-content: center; }
+.tile { position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; border: 1px solid var(--color-line);
+  background: linear-gradient(180deg, var(--a, #26324a), #111418); transition: box-shadow var(--ease), border-color var(--ease), transform 80ms ease; }
+.tile:active { transform: scale(.985); }
+.tile::after { content: ""; position: absolute; inset: auto 0 0 0; height: 55%; background: linear-gradient(180deg, transparent, rgba(0,0,0,.78)); pointer-events: none; }
+.tile.pgm { border: 3px solid var(--color-pgm); box-shadow: 0 0 16px rgba(229,72,77,.45); }
+.tile.pvw { border: 3px solid var(--color-pvw); box-shadow: 0 0 16px rgba(48,164,108,.4); }
+.tile .hold-fill { opacity: .55; z-index: 2; }
+.tile.holding { border: 3px solid var(--color-pgm); }
+.tile .tag { position: absolute; top: 8px; left: 8px; z-index: 1; }
+.tile .pills { position: absolute; top: 8px; right: 8px; z-index: 1; display: flex; gap: 4px; align-items: center; }
+.tile .time { font: 700 10px var(--font-mono); background: rgba(0,0,0,.75); color: #fff; padding: 2px 6px; border-radius: 6px; }
+.tile .name { position: absolute; left: 10px; right: 10px; bottom: 9px; z-index: 1; font-weight: 700; font-size: 13px; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.tile .ask { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: #fff; font-size: 13.5px; text-shadow: 0 1px 2px rgba(0,0,0,.6); pointer-events: none; }
+.tile .ask small { font-size: 9px; letter-spacing: .12em; opacity: .8; font-weight: 600; }
+.tile { touch-action: manipulation; }
+.tile.small .tag, .tile.small .pills { top: 5px; } .tile.small .tag { left: 5px; } .tile.small .pills { right: 5px; }
+.tile.small .name { font-size: 11.5px; bottom: 5px; left: 7px; right: 7px; }
+.tile.tiny .pills, .tile.tiny .time { display: none; }
+footer { flex: none; font-size: 10.5px; color: var(--color-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
