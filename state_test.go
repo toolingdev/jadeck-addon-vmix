@@ -245,3 +245,16 @@ func TestPadActionsRunAgainstFake(t *testing.T) {
 		}
 	}
 }
+
+func TestShortName(t *testing.T) {
+	for in, want := range map[string]string{
+		"NDI DESKTOP-1 (Proclaim - Livestream)": "Proclaim - Livestream",
+		"NDI CAM (Chan1, 10.0.0.5)":             "Chan1, 10.0.0.5",
+		"Wing Audio":                            "Wing Audio",
+		"NDI ()":                                "NDI ()",
+	} {
+		if got := shortName(in); got != want {
+			t.Errorf("shortName(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

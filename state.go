@@ -391,6 +391,19 @@ func transitionButtons(s *Snapshot) []map[string]any {
 	return out
 }
 
+// shortName trims vMix's auto titles for small buttons: an NDI input is
+// titled "NDI HOST (Source name)", and only the source name tells inputs
+// apart ("NDI DESKTOP-1 (Proclaim - Livestream)" -> "Proclaim - Livestream").
+func shortName(title string) string {
+	t := strings.TrimSpace(title)
+	if strings.HasPrefix(t, "NDI ") && strings.HasSuffix(t, ")") {
+		if i := strings.Index(t, "("); i > 0 && i < len(t)-2 {
+			return strings.TrimSpace(t[i+1 : len(t)-1])
+		}
+	}
+	return t
+}
+
 func overlayButtons(s *Snapshot, w wset) []map[string]any {
 	out := []map[string]any{}
 	mix := w.int("mix", 1, 1, 16)
@@ -412,12 +425,12 @@ func overlayButtons(s *Snapshot, w wset) []map[string]any {
 		if ref := w.str(fmt.Sprintf("overlay%d", n), ""); ref != "" {
 			if in, key, err := s.find(ref); err == nil {
 				p["input"] = key
-				label = fmt.Sprintf("%d · %s", n, in.Title)
+				label = fmt.Sprintf("%d · %s", n, shortName(in.Title))
 			}
 		}
 		b := btn(fmt.Sprintf("o%d", n), label, "overlay", p)
 		if in := s.ByNumber(o.Input); in != nil {
-			b["label"] = fmt.Sprintf("%d · %s", n, in.Title)
+			b["label"] = fmt.Sprintf("%d · %s", n, shortName(in.Title))
 			if o.Preview {
 				b["tone"], b["sub"] = "pvw", "PREVIEW"
 			} else {
