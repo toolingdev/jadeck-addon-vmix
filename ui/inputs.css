@@ -5,8 +5,8 @@
 .tile::after { content: ""; position: absolute; inset: auto 0 0 0; height: 55%; background: linear-gradient(180deg, transparent, rgba(0,0,0,.78)); pointer-events: none; }
 .tile.pgm { border: 3px solid var(--color-pgm); box-shadow: 0 0 16px rgba(229,72,77,.45); }
 .tile.pvw { border: 3px solid var(--color-pvw); box-shadow: 0 0 16px rgba(48,164,108,.4); }
-.tile .hold-fill { opacity: .55; z-index: 2; }
-.tile.holding { border: 3px solid var(--color-pgm); }
+.tile .jk-hold-fill { opacity: .55; z-index: 2; }
+.tile.jk-holding { border: 3px solid var(--color-pgm); }
 .tile .tag { position: absolute; top: 8px; left: 8px; z-index: 1; }
 .tile .pills { position: absolute; top: 8px; right: 8px; z-index: 1; display: flex; gap: 4px; align-items: center; }
 .tile .time { font: 700 10px var(--font-mono); background: rgba(0,0,0,.75); color: #fff; padding: 2px 6px; border-radius: 6px; }
@@ -20,3 +20,4 @@
 .tile.small .name { font-size: 11.5px; bottom: 5px; left: 7px; right: 7px; }
 .tile.tiny .pills, .tile.tiny .time { display: none; }
 footer { flex: none; font-size: 10.5px; color: var(--color-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .tag { font: 700 10.5px var(--font-mono); background: rgba(0,0,0,.75); color: #fff; padding: 2px 7px; border-radius: 6px; }

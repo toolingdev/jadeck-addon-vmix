@@ -1,6 +1,7 @@
 // Outputs: streaming, recording, external, MultiCorder… one row each with
 // a status dot (red, pulsing while live), how long it has run, and
 // Start / Stop, pressed and held (the widget's holdSeconds, default 5 s).
+// Buttons and hold-to-confirm are the shared frame kit's (JK).
 (function () {
   "use strict";
   var K = window.Kit, main = document.getElementById("main"), tick = 0;
@@ -15,15 +16,17 @@
   function button(r, label, sub, short) {
     var b;
     if (r.hold) {
-      b = K.holdButton(label, sub, { seconds: r.hold, action: "output", params: r.params, verb: r.on ? "STOPS" : "STARTS", cls: (r.on ? "armedlive" : "") + (short ? " center" : "") });
+      b = K.holdButton(label, sub, { seconds: r.hold, action: "output", params: r.params, verb: r.on ? "STOPS" : "STARTS" });
+      if (r.on) b.classList.add("armedlive");
     } else {
-      b = K.button(label, sub, r.on ? "pgm" : "");
+      b = window.JK.button({ label: label, sub: sub, tone: r.on ? "pgm" : "" });
       K.press(b, "output", r.params);
     }
+    if (short) b.classList.add("center");
     return b;
   }
   K.render = function (st) {
-    K.header("Outputs", st.recording === undefined ? "" : "");
+    K.header("Outputs", "");
     var rows = Array.isArray(st.outputRows) ? st.outputRows : [];
     if (st.connected === false) return K.empty(main, st.error || "vMix isn't answering");
     if (!rows.length) return K.empty(main, "Pick outputs in this widget's settings.");
@@ -36,19 +39,17 @@
       var per = Math.max(1, Math.floor((main.clientHeight + 6) / (tap + 6))), cols = Math.ceil(rows.length / per);
       box.className = "tight"; box.style.gridTemplateColumns = "repeat(" + cols + ", minmax(0, 1fr))";
       rows.forEach(function (r) {
-        var b = button(r, (r.on ? "Stop " : "Start ") + r.name, r.on ? "LIVE" : "OFF AIR", false);
-        box.appendChild(b);
+        box.appendChild(button(r, (r.on ? "Stop " : "Start ") + r.name, r.on ? "LIVE" : "OFF AIR", false));
       });
       main.appendChild(box);
       return;
     }
     rows.forEach(function (r) {
       var row = K.el("div", "orow" + (r.on ? " on" : ""));
-      row.appendChild(K.el("span", "dot" + (r.on ? (r.id === "stream" || r.id === "record" ? " live" : " on") : "")));
+      row.appendChild(K.el("span", "jk-dot" + (r.on ? (r.id === "stream" || r.id === "record" ? " live" : " on") : "")));
       row.appendChild(K.el("span", "nm", r.name));
-      var t = K.el("span", "ro", elapsed(r)); t.dataset.id = r.id; row.appendChild(t);
-      var b = button(r, r.on ? "Stop" : "Start", "", true);
-      row.appendChild(b);
+      var t = K.el("span", "jk-ro", elapsed(r)); t.dataset.id = r.id; row.appendChild(t);
+      row.appendChild(button(r, r.on ? "Stop" : "Start", "", true));
       box.appendChild(row);
     });
     main.appendChild(box);

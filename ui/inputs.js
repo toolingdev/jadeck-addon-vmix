@@ -45,16 +45,17 @@
     while (grid.children.length > items.length) grid.removeChild(grid.lastChild);
     items.forEach(function (it, i) {
       var t = grid.children[i];
-      if (!t) { t = K.el("div", "tile live"); t.setAttribute("role", "button"); t.tabIndex = 0; grid.appendChild(t); }
+      if (!t) { t = K.el("div", "tile jk-live"); t.setAttribute("role", "button"); t.tabIndex = 0; grid.appendChild(t); }
       var tone = it.tone === "pgm" || it.tone === "pvw" ? it.tone : "";
-      t.className = "tile live" + (tone ? " " + tone : "") + (t.classList.contains("holding") ? " holding" : "") + (f.h < 90 ? " small" : "") + (f.h < 60 ? " tiny" : "");
+      t.className = "tile jk-live" + (tone ? " " + tone : "") + (t._holdBound ? " jk-hold" : "") + (t.classList.contains("jk-holding") ? " jk-holding" : "") +
+        (f.h < 90 ? " small" : "") + (f.h < 60 ? " tiny" : "");
       t.style.setProperty("--a", hues[it.type] || "#2a3039");
-      Array.prototype.slice.call(t.childNodes).forEach(function (n) { if (!n.classList || !n.classList.contains("hold-fill")) t.removeChild(n); });
+      Array.prototype.slice.call(t.childNodes).forEach(function (n) { if (!n.classList || !n.classList.contains("jk-hold-fill")) t.removeChild(n); });
       var inline = f.h < 60;
       if (numbers && it.number != null && !inline) t.appendChild(K.el("span", "tag", String(it.number)));
       var pills = K.el("div", "pills");
       if (it.state === "Running" && it.remaining > 0) pills.appendChild(K.el("span", "time", "▶ " + K.clock(it.remaining)));
-      if (tone) pills.appendChild(K.el("span", "pill " + tone, tone === "pgm" ? "PGM" : "PVW"));
+      if (tone) pills.appendChild(K.el("span", "jk-tag " + tone, tone === "pgm" ? "PGM" : "PVW"));
       t.appendChild(pills);
       t.appendChild(K.el("div", "name", (inline && numbers && it.number != null ? it.number + " · " : "") + (it.title || it.label || "")));
       t.setAttribute("aria-label", (it.label || it.title) + (tone === "pgm" ? ", program" : tone === "pvw" ? ", preview" : ""));
@@ -65,23 +66,23 @@
         if (!t._holdBound) {
           t._holdBound = true;
           var ask = null;
-          K.hold(t, {
+          window.JK.hold(t, { // the shared frame kit's hold to confirm
             seconds: function () { return t._item.hold; },
-            progress: function (left) {
+            onProgress: function (left) {
               if (!ask) { ask = K.el("div", "ask"); t.appendChild(ask); }
               ask.textContent = "";
               ask.appendChild(K.el("b", "", t._item.holdLabel || "Keep holding…"));
               ask.appendChild(K.el("small", "", "CUTS IN " + left + " S"));
             },
-            cancel: function () { if (ask) { ask.remove(); ask = null; } },
-            fire: function () { return K.act(t._item.action, t._item.params || {}); },
+            onCancel: function () { if (ask) { ask.remove(); ask = null; } },
+            onFire: function () { return K.act(t._item.action, t._item.params || {}); },
           });
         }
         t.setAttribute("aria-label", t.getAttribute("aria-label") + ", press and hold " + it.hold + " seconds to cut");
       } else {
         t.onclick = function () { if (!K.editing && t._item.action && !t._holdBound) K.act(t._item.action, t._item.params || {}).catch(function () {}); };
       }
-      t.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t.onclick(); } };
+      t.onkeydown = function (e) { if ((e.key === "Enter" || e.key === " ") && t.onclick) { e.preventDefault(); t.onclick(); } };
     });
   };
   K.onSize = function () { K.render(K.state, K.settings); };

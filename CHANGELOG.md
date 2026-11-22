@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Widgets use jadeck's shared frame kit** (`/api/kit/v1`, needs jadeck
+  0.6 or newer). The Audio mixer now has the console fader strip (dB
+  scale, metallic cap, LED meter next to the cap, level pill, MUTE / S),
+  the same as the Behringer WING faders; strips that don't fit are counted
+  in the header ("3 OF 5 STRIPS"). Buttons, hold to confirm and the header
+  are the kit's in every widget. The add-on's own copies (`ui/kit.js`,
+  `ui/kit.css`) are gone; the bridge is `ui/bridge.js`.
+
 ## 2.0.0
 
 A full vMix control surface (vMix 29; the API map comes from vMix 29.0.0.50).

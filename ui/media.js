@@ -1,6 +1,7 @@
 // Media: one video / audio / list input (the widget's "Input" setting):
 // a progress bar with position and length (counting on between state
-// updates while it plays), and Restart, Play, Pause, Next, Loop.
+// updates while it plays), and Restart, Play, Pause, Next, Loop (the
+// shared frame kit's buttons; amber = the current one).
 (function () {
   "use strict";
   var K = window.Kit, main = document.getElementById("main"), timer = 0;
@@ -24,12 +25,12 @@
     if (m.item) box.appendChild(K.el("div", "item", m.item));
     var playing = m.state === "Running", c = K.el("div", "ctrls");
     var defs = [
-      ["⟲", "restart", "Restart", ""], ["▶", "play", "Play", playing ? "" : "sel"], ["❚❚", "pause", "Pause", playing ? "sel" : ""],
-      ["⏭", "next", "Next item", ""], ["⟳", m.loop ? "loop_off" : "loop_on", m.loop ? "Loop on" : "Loop off", m.loop ? "sel" : ""],
+      ["⟲", "restart", "Restart", false], ["▶", "play", "Play", !playing], ["❚❚", "pause", "Pause", playing],
+      ["⏭", "next", "Next item", false], ["⟳", m.loop ? "loop_off" : "loop_on", m.loop ? "Loop on" : "Loop off", !!m.loop],
     ];
     defs.forEach(function (d) {
-      var b = K.button(d[0], "", d[3]); b.setAttribute("aria-label", d[2]); b.title = d[2];
-      if (d[1] === "next" && !m.list) b.disabled = true;
+      var b = window.JK.button({ label: d[0], title: d[2], active: d[3], disabled: d[1] === "next" && !m.list });
+      b.setAttribute("aria-label", d[2]);
       K.press(b, "media", { input: m.key, op: d[1] });
       c.appendChild(b);
     });

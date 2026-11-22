@@ -1,21 +1,2 @@
-#strips { position: absolute; inset: 0; display: grid; gap: 8px; justify-content: center; }
-.strip { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 8px 8px 8px; border-radius: 12px;
-  border: 1px solid var(--color-line); background: linear-gradient(180deg, #161A20, #101317); transition: border-color var(--ease), box-shadow var(--ease); }
-.strip.muted { border-color: rgba(229,72,77,.7); box-shadow: 0 0 12px rgba(229,72,77,.15); }
-.strip .who { min-width: 0; }
-.strip .who .cap { display: block; overflow: hidden; text-overflow: ellipsis; }
-.strip .who b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.strip .body { flex: 1; min-height: 0; display: flex; gap: 6px; justify-content: center; }
-.strip .fader { flex: 1 1 0; min-width: 44px; max-width: 76px; }
-.strip .meter { position: relative; flex: none; width: 24px; display: flex; flex-direction: column; }
-.strip .meter canvas { flex: 1; min-height: 0; width: 24px; display: block; }
-.strip .meter .lr { display: flex; justify-content: space-around; font: 700 8px var(--font-sans); color: var(--color-dim); padding-top: 3px; }
-.strip .ro { align-self: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.strip .row { display: flex; gap: 6px; }
-.strip .row .btn { flex: 1; font-size: 12.5px; letter-spacing: .04em; }
-.strip.compact .scale b { display: none; }
-.strip.compact .meter .lr { display: none; }
-.strip.tiny .body { display: none; }
-.strip.tiny { justify-content: space-between; }
-.strip.micro .ro, .strip.micro .who .cap { display: none; }
-.strip.micro { padding: 6px; gap: 4px; }
+/* Audio mixer: the strips are the shared frame kit's (JK.Strip, kit.css). */
+#strips { position: absolute; inset: 0; }

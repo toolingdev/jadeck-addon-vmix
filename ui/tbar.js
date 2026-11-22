@@ -11,12 +11,12 @@
     main.textContent = "";
     bar = K.el("div"); bar.id = "bar";
     var well = K.el("div", "well");
-    fader = K.el("div", "fader live"); fader.setAttribute("role", "slider"); fader.setAttribute("aria-label", "T-bar"); fader.tabIndex = 0;
+    fader = K.el("div", "fader jk-live"); fader.setAttribute("role", "slider"); fader.setAttribute("aria-label", "T-bar"); fader.tabIndex = 0;
     var sc = K.el("div", "scale");
     for (var i = 0; i <= 10; i++) { var t = K.el("i", i === 0 || i === 10 ? "zero" : ""); t.style.top = (i * 10) + "%"; sc.appendChild(t); }
     fader.appendChild(sc); fader.appendChild(K.el("div", "track")); cap = K.el("div", "cap-m"); fader.appendChild(cap);
     well.appendChild(fader); bar.appendChild(well);
-    ro = K.el("div", "ro", "0%"); bar.appendChild(ro);
+    ro = K.el("div", "jk-ro", "0%"); bar.appendChild(ro);
     main.appendChild(bar);
     fader.addEventListener("pointerdown", function (e) { if (K.editing) return; drag = true; fader.classList.add("dragging"); fader.setPointerCapture(e.pointerId); move(e); });
     fader.addEventListener("pointermove", function (e) { if (drag) move(e); });

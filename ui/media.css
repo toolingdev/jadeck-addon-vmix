@@ -1,9 +1,8 @@
 #media { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-.prog { height: 6px; border-radius: 3px; background: #07080A; border: 1px solid var(--color-line); overflow: hidden; flex: none; }
+.prog { height: 6px; border-radius: 3px; background: var(--jk-recess); border: 1px solid var(--color-line); overflow: hidden; flex: none; }
 .prog i { display: block; height: 100%; width: 0; background: var(--color-accent); transition: width 250ms linear; }
 .times { display: flex; justify-content: space-between; font: 600 11px var(--font-mono); color: var(--color-muted); font-variant-numeric: tabular-nums; flex: none; }
 .item { font-size: 11px; color: var(--color-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: none; }
 .ctrls { display: grid; gap: 8px; grid-template-columns: repeat(5, minmax(0, 1fr)); flex: none; }
-.ctrls .btn { font-size: 15px; }
+.ctrls .jk-btn { --jk-font: 15px; padding: 2px; min-width: 0; }
 @media (prefers-reduced-motion: reduce) { .prog i { transition: none; } }
-.ctrls .btn { padding: 2px; min-width: 0; }

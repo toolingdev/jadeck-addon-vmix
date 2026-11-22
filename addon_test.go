@@ -25,9 +25,16 @@ func TestManifest(t *testing.T) {
 	sources := map[string]bool{}
 	for _, w := range m.Widgets {
 		if w.Kind == addon.KindFrame {
-			for _, f := range []string{w.Entry, strings.Replace(w.Entry, ".html", ".js", 1), strings.Replace(w.Entry, ".html", ".css", 1), "ui/kit.js", "ui/kit.css"} {
+			for _, f := range []string{w.Entry, strings.Replace(w.Entry, ".html", ".js", 1), strings.Replace(w.Entry, ".html", ".css", 1), "ui/bridge.js"} {
 				if _, err := os.Stat(filepath.FromSlash(f)); err != nil {
 					t.Errorf("widget %s: %v", w.Type, err)
+				}
+			}
+			// The controls come from jadeck's shared frame kit, loaded before the page's own files.
+			page, _ := os.ReadFile(filepath.FromSlash(w.Entry))
+			for _, want := range []string{`href="/api/kit/v1/kit.css"`, `src="/api/kit/v1/kit.js"`, `src="bridge.js"`} {
+				if !strings.Contains(string(page), want) {
+					t.Errorf("widget %s: %s doesn't load %s", w.Type, w.Entry, want)
 				}
 			}
 		}

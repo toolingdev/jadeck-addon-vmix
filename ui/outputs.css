@@ -1,9 +1,11 @@
 #rows { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 6px; }
-.orow { display: flex; align-items: center; gap: 10px; min-height: var(--tap); }
+.orow { display: flex; align-items: center; gap: 10px; min-height: var(--jk-tap); }
+.orow .jk-dot { width: 12px; height: 12px; }
 .orow .nm { flex: 1; min-width: 0; font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.orow .ro { flex: none; color: var(--color-muted); }
-.orow.on .ro { color: var(--color-fg); }
-.orow .btn { flex: none; width: 40%; max-width: 170px; min-width: 96px; }
-.narrow .orow .ro { display: none; }
+.orow .jk-ro { flex: none; color: var(--color-muted); }
+.orow.on .jk-ro { color: var(--color-fg); }
+.orow .jk-btn { flex: none; width: 40%; max-width: 170px; min-width: 96px; }
+.narrow .orow .jk-ro { display: none; }
+.jk-btn.armedlive { border-color: color-mix(in srgb, var(--color-pgm) 75%, transparent); }
 #rows.tight { display: grid; gap: 6px; align-content: center; flex-direction: unset; }
-#rows.tight small { font-family: var(--font-mono); letter-spacing: .04em; }
+#rows.tight .jk-s { font-family: var(--font-mono); letter-spacing: .04em; }
