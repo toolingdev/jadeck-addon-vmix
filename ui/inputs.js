@@ -9,6 +9,81 @@
     GT: "#3a2a3e", Xaml: "#3a2a3e", Title: "#3a2a3e", Image: "#2a3445", Photos: "#2a3445", Colour: "#1d2026", Blank: "#1a1d22", Replay: "#3d2b2b" };
   var hints = { preview: "Tap = preview · take with Cut / Fade", preview_take: "Tap = preview · tap the green one again to cut",
     program_hold: "Press and hold = cut to program", program_confirm: "Press and hold = cut to program", program: "Tap = cut to program" };
+  var MENU_MS = 550; // press this long on a tile: the overlay menu
+  var menu = null;   // the open overlay menu: {input, el}
+
+  // Overlay channels this input is on (on air or in the preview overlay).
+  function overlaysOf(st, number) {
+    var on = {};
+    (Array.isArray(st.overlays) ? st.overlays : []).forEach(function (o) {
+      if (o && o.input === number) on[o.number] = o.preview ? "pvw" : "pgm";
+    });
+    return on;
+  }
+  function closeMenu() { if (menu) { menu.el.remove(); menu = null; } }
+  // The overlay menu: tap a number to put this input on that overlay live;
+  // the red one (already on air there) takes it off.
+  function drawMenu(st) {
+    if (!menu) return;
+    var it = menu.item, count = Number(K.settings.overlayCount || 4) === 8 ? 8 : 4;
+    var on = overlaysOf(st, it.number), box = menu.el;
+    box.textContent = "";
+    var card = K.el("div", "ov-card");
+    card.setAttribute("role", "dialog");
+    card.setAttribute("aria-label", (it.title || it.label) + " to an overlay");
+    card.appendChild(K.el("div", "ov-title", (it.title || it.label || "Input") + " → overlay"));
+    var grid = K.el("div", "ov-grid" + (count === 8 ? " eight" : ""));
+    for (var n = 1; n <= count; n++) (function (n) {
+      var state = on[n];
+      var b = window.JK.button({ label: String(n), sub: state === "pgm" ? "ON AIR" : state === "pvw" ? "PREVIEW" : "",
+        tone: state === "pgm" ? "pgm" : state === "pvw" ? "pvw" : "",
+        title: state === "pgm" ? "Take it off overlay " + n : "Put it on overlay " + n,
+        onClick: function () {
+          var p = { n: n, op: state === "pgm" ? "out" : "in" };
+          if (state !== "pgm") p.input = (it.params && it.params.input) || it.key || it.number;
+          return K.act("overlay", p).then(function () { closeMenu(); }, function () {});
+        } });
+      grid.appendChild(b);
+    })(n);
+    card.appendChild(grid);
+    if (box.clientHeight > 230) card.appendChild(K.el("p", "ov-help", "Tap a number: puts this input on that overlay live (tap the red one to take it off)."));
+    var close = window.JK.button({ label: "Close", onClick: function () { closeMenu(); } });
+    close.classList.add("ov-close");
+    card.appendChild(close);
+    box.appendChild(card);
+  }
+  function openMenu(it) {
+    closeMenu();
+    var box = K.el("div", "ov-menu");
+    box.onclick = function (e) { if (e.target === box) closeMenu(); };
+    document.body.appendChild(box);
+    menu = { item: it, el: box };
+    drawMenu(K.state);
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
+
+  // Press and hold a tile (no hold-to-cut on it) to open the overlay menu.
+  // A held press never also previews.
+  function bindMenuPress(t) {
+    var timer = 0, fired = false, x = 0, y = 0;
+    function clear() { clearTimeout(timer); timer = 0; t.classList.remove("pressing"); }
+    t.addEventListener("pointerdown", function (e) {
+      fired = false;
+      if (K.editing || !K.bool("overlayMenu", true) || t._item.hold) return;
+      x = e.clientX; y = e.clientY;
+      t.classList.add("pressing");
+      timer = setTimeout(function () { timer = 0; fired = true; t.classList.remove("pressing"); openMenu(t._item); }, MENU_MS);
+    });
+    t.addEventListener("pointermove", function (e) { if (timer && Math.abs(e.clientX - x) + Math.abs(e.clientY - y) > 12) clear(); });
+    t.addEventListener("pointerup", clear);
+    t.addEventListener("pointercancel", clear);
+    t.addEventListener("pointerleave", clear);
+    t.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+      if (!K.editing && K.bool("overlayMenu", true)) { fired = true; openMenu(t._item); }
+    });
+    t._menuFired = function () { var f = fired; fired = false; return f; };
+  }
 
   function fit(n, W, H, gap) {
     var best = { cols: 1, w: W, h: Math.max(20, H / n), score: -Infinity };
@@ -35,7 +110,9 @@
     // main, and judging by main made the hint flicker on and off forever.
     var tall = (window.innerHeight || document.body.clientHeight) > 260;
     if (!foot && tall) { foot = K.el("footer"); document.body.appendChild(foot); }
-    if (foot) { foot.hidden = !tall; foot.textContent = (hints[set.tap] || hints.preview) + " · inputs tracked by vMix ID"; r = main.getBoundingClientRect(); }
+    var menuOn = K.bool("overlayMenu", true);
+    var hint = (hints[set.tap] || hints.preview) + (menuOn ? (set.tap === "program_hold" || set.tap === "program_confirm" ? " · right-click or ◧ = overlay menu" : " · hold = overlay menu") : "");
+    if (foot) { foot.hidden = !tall; foot.textContent = hint; r = main.getBoundingClientRect(); }
     var f = fit(items.length, r.width, r.height, gap);
     var grid = document.getElementById("grid");
     if (!grid) { main.textContent = ""; grid = K.el("div"); grid.id = "grid"; main.appendChild(grid); }
@@ -45,7 +122,7 @@
     while (grid.children.length > items.length) grid.removeChild(grid.lastChild);
     items.forEach(function (it, i) {
       var t = grid.children[i];
-      if (!t) { t = K.el("div", "tile jk-live"); t.setAttribute("role", "button"); t.tabIndex = 0; grid.appendChild(t); }
+      if (!t) { t = K.el("div", "tile jk-live"); t.setAttribute("role", "button"); t.tabIndex = 0; grid.appendChild(t); bindMenuPress(t); }
       var tone = it.tone === "pgm" || it.tone === "pvw" ? it.tone : "";
       t.className = "tile jk-live" + (tone ? " " + tone : "") + (t._holdBound ? " jk-hold" : "") + (t.classList.contains("jk-holding") ? " jk-holding" : "") +
         (f.h < 90 ? " small" : "") + (f.h < 60 ? " tiny" : "");
@@ -56,7 +133,17 @@
       var pills = K.el("div", "pills");
       if (it.state === "Running" && it.remaining > 0) pills.appendChild(K.el("span", "time", "▶ " + K.clock(it.remaining)));
       if (tone) pills.appendChild(K.el("span", "jk-tag " + tone, tone === "pgm" ? "PGM" : "PVW"));
+      var ovOn = overlaysOf(st, it.number), ovN = Object.keys(ovOn).filter(function (k) { return ovOn[k] === "pgm"; });
+      if (ovN.length && !inline) pills.appendChild(K.el("span", "jk-tag ov", "OV " + ovN.join(",")));
       t.appendChild(pills);
+      if (it.hold && menuOn && !inline) {
+        // Hold-to-cut tiles keep the press for the cut: a small corner button opens the menu.
+        var ob = K.el("button", "ov-open", "◧");
+        ob.type = "button"; ob.title = "Overlay menu"; ob.setAttribute("aria-label", "Overlay menu");
+        ob.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+        ob.onclick = function (e) { e.stopPropagation(); if (!K.editing) openMenu(t._item); };
+        t.appendChild(ob);
+      }
       t.appendChild(K.el("div", "name", (inline && numbers && it.number != null ? it.number + " · " : "") + (it.title || it.label || "")));
       t.setAttribute("aria-label", (it.label || it.title) + (tone === "pgm" ? ", program" : tone === "pvw" ? ", preview" : ""));
       t._item = it;
@@ -80,10 +167,21 @@
         }
         t.setAttribute("aria-label", t.getAttribute("aria-label") + ", press and hold " + it.hold + " seconds to cut");
       } else {
-        t.onclick = function () { if (!K.editing && t._item.action && !t._holdBound) K.act(t._item.action, t._item.params || {}).catch(function () {}); };
+        t.onclick = function () {
+          if (t._menuFired && t._menuFired()) return; // that press opened the overlay menu
+          if (!K.editing && t._item.action && !t._holdBound) K.act(t._item.action, t._item.params || {}).catch(function () {});
+        };
       }
-      t.onkeydown = function (e) { if ((e.key === "Enter" || e.key === " ") && t.onclick) { e.preventDefault(); t.onclick(); } };
+      t.onkeydown = function (e) {
+        if ((e.key === "Enter" || e.key === " ") && t.onclick) { e.preventDefault(); t.onclick(); }
+        else if ((e.key === "o" || e.key === "O" || e.key === "ContextMenu") && menuOn && !K.editing) { e.preventDefault(); openMenu(t._item); }
+      };
     });
+    if (menu) {
+      // keep the open menu pointing at the same input, with live overlay state
+      var still = items.filter(function (x) { return x.number === menu.item.number; })[0];
+      if (still && !K.editing) { menu.item = still; drawMenu(st); } else closeMenu();
+    }
   };
   K.onSize = function () { K.render(K.state, K.settings); };
   K.start();

@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## 2.2.0
+
+- **Inputs: send an input to an overlay.** Press and hold a tile (or
+  right-click it, or press O) and pick overlay 1-4 (1-8 in the widget's
+  settings): the input goes on that overlay live; the red one (already on
+  air there) takes it off. Tiles show which overlays they're on ("OV 2").
+  On "cut after a press-and-hold" grids, the press stays the cut and a
+  small ◧ button on each tile opens the menu. Settings: "Overlay menu"
+  (on by default) and "Overlay channels in the menu".
+
+## 2.1.0
 
 - **Widgets use jadeck's shared frame kit** (`/api/kit/v1`, needs jadeck
   0.6 or newer). The Audio mixer now has the console fader strip (dB

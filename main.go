@@ -167,6 +167,8 @@ func widgets() []addon.WidgetDef {
 					{Value: "program", Label: "Cut at once (no confirm)"}}},
 				{Key: "numbers", Label: "Show input numbers", Type: "bool", Default: true},
 				fHold,
+				{Key: "overlayMenu", Label: "Overlay menu", Type: "bool", Default: true, Help: "Press and hold a tile (or right-click) to put that input on an overlay channel, or take it off."},
+				{Key: "overlayCount", Label: "Overlay channels in the menu", Type: "select", Default: "4", Options: []addon.Option{{Value: "4", Label: "1-4"}, {Value: "8", Label: "1-8"}}},
 				fMix,
 			},
 			Sample: sampleState(nil)},
