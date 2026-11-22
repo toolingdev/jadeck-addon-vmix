@@ -41,3 +41,11 @@ footer { flex: none; font-size: 10.5px; color: var(--color-dim); white-space: no
 .ov-help { margin: 0; font-size: 11px; color: var(--color-muted); line-height: 1.35; flex: none; }
 .ov-close { min-height: 32px; flex: none; }
 @media (max-height: 200px) { .ov-card { padding: 8px; gap: 6px; } .ov-grid .jk-btn { min-height: 28px; font-size: 14px; } .ov-grid .jk-btn > .jk-s { display: none; } }
+
+/* page turner (touch screens, when the inputs don't all fit finger-size) */
+.tile.pager { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0;
+  font: inherit; color: var(--color-fg); cursor: pointer; border-style: dashed; }
+.tile.pager b { font-size: 16px; line-height: 1; }
+.tile.pager small { font-size: 10px; color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.tile.pager { background: var(--color-panel-2, #181c22); }
+.tile.pager::after { display: none; }

@@ -98,6 +98,12 @@
     return best;
   }
 
+  // Touch screens: a tile is never smaller than a finger (32 px). When
+  // all inputs can't fit that big, they go in pages and the last tile
+  // turns the page ("› 2/3").
+  var page = 0, pager = null, MIN_TAP = 32;
+  var coarse = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+
   K.render = function (st, set) {
     var items = Array.isArray(st.inputGrid) ? st.inputGrid : [];
     var mix = Number(set.mix || 1) || 1;
@@ -113,12 +119,25 @@
     var menuOn = K.bool("overlayMenu", true);
     var hint = (hints[set.tap] || hints.preview) + (menuOn ? (set.tap === "program_hold" || set.tap === "program_confirm" ? " · right-click or ◧ = overlay menu" : " · hold = overlay menu") : "");
     if (foot) { foot.hidden = !tall; foot.textContent = hint; r = main.getBoundingClientRect(); }
-    var f = fit(items.length, r.width, r.height, gap);
+    var f = fit(items.length, r.width, r.height, gap), pages = 1;
+    if (coarse && items.length > 1 && (f.w < MIN_TAP + 2 || f.h < MIN_TAP)) {
+      var per = items.length - 1;
+      for (; per > 1; per--) {
+        f = fit(per + 1, r.width, r.height, gap);
+        if (f.w >= MIN_TAP + 2 && f.h >= MIN_TAP) break;
+      }
+      if (per <= 1) f = fit(2, r.width, r.height, gap);
+      per = Math.max(1, per);
+      pages = Math.ceil(items.length / per);
+      page = page % pages;
+      items = items.slice(page * per, page * per + per);
+    } else page = 0;
     var grid = document.getElementById("grid");
     if (!grid) { main.textContent = ""; grid = K.el("div"); grid.id = "grid"; main.appendChild(grid); }
     grid.style.gap = gap + "px";
     grid.style.gridTemplateColumns = "repeat(" + f.cols + ", " + Math.floor(f.w) + "px)";
     grid.style.gridAutoRows = Math.floor(f.h) + "px";
+    if (pager && pager.parentNode) pager.parentNode.removeChild(pager);
     while (grid.children.length > items.length) grid.removeChild(grid.lastChild);
     items.forEach(function (it, i) {
       var t = grid.children[i];
@@ -177,6 +196,18 @@
         else if ((e.key === "o" || e.key === "O" || e.key === "ContextMenu") && menuOn && !K.editing) { e.preventDefault(); openMenu(t._item); }
       };
     });
+    if (pages > 1) {
+      if (!pager) {
+        pager = K.el("button", "tile pager");
+        pager.type = "button";
+        pager.onclick = function () { if (!K.editing) { page++; K.render(K.state, K.settings); } };
+      }
+      pager.textContent = "";
+      pager.appendChild(K.el("b", "", "›"));
+      pager.appendChild(K.el("small", "", (page + 1) + "/" + pages));
+      pager.setAttribute("aria-label", "More inputs, page " + (page + 1) + " of " + pages);
+      grid.appendChild(pager);
+    }
     if (menu) {
       // keep the open menu pointing at the same input, with live overlay state
       var still = items.filter(function (x) { return x.number === menu.item.number; })[0];

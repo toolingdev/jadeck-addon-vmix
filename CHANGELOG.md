@@ -9,6 +9,9 @@
   On "cut after a press-and-hold" grids, the press stays the cut and a
   small ◧ button on each tile opens the menu. Settings: "Overlay menu"
   (on by default) and "Overlay channels in the menu".
+- **Inputs on a small touch screen:** tiles never get smaller than a
+  finger. When all inputs can't fit that big, they go in pages and the
+  last tile turns the page ("› 2/3").
 
 ## 2.1.0
 
